@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  webui:
+    volumes:
+      - '${MODEL_DIR}:/models'
+      - ./data:/lollms-webui/data
+      - ./data/.parisneo:/root/.parisneo/
+      - ./configs:/lollms-webui/configs
+    ports:
+      - "9700:9600"
+    image: 'noneabove1182/lollms-webui-docker:latest'
+    ulimits:
+      memlock: -1
+    mem_limit: 50gb
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [ gpu ]
+    command:
+      [
+        "python3",
+        "app.py",
+        "--host",
+        "0.0.0.0",
+        "--db_path",
+        "data/database.db",
+        "--debug"
+      ]
